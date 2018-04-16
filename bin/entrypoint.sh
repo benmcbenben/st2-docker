@@ -72,4 +72,9 @@ fi
 
 ( cd /etc/nginx/conf.d && ln -sf st2-base.cnf st2.conf )
 
+# Added in puppet SSL cert so git installs do not fail.
+if [ ! -z ${GIT_ADDRESS} ]; then
+    echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/puppet_cert.crt && update-ca-certificates
+fi
+
 exec /sbin/init
