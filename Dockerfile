@@ -73,7 +73,7 @@ ARG ST2MISTRAL_VERSION
 COPY bin/install.sh /install.sh
 
 # It is not possible to dynamically set ARG's, so we do the needful in bin/install.sh
-RUN /install.sh --tag=${ST2_TAG} --st2=${ST2_VERSION} --st2web=${ST2WEB_VERSION} --st2mistral=${ST2MISTRAL_VERSION} --user=${CIRCLE_PROJECT_USERNAME} --repo=${CIRCLE_PROJECT_REPONAME} --buildurl=${CIRCLE_BUILD_URL} --sha=${CIRCLE_SHA1}
+RUN /install.sh --user=st2admin --password=password
 
 # Install chatops and disable unless entrypoint.d file is present
 # Install st2-chatops with Node.js v6 requirement

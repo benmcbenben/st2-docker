@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create htpasswd file and login to st2 using specified username/password
-htpasswd -b /etc/st2/htpasswd st2admin password
+htpasswd -b /etc/st2/htpasswd ${ST2_USER} ${ST2_PASSWORD}
 
 mkdir -p /root/.st2
 
