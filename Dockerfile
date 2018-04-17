@@ -140,4 +140,4 @@ COPY bin/entrypoint-1ppc.sh /st2-docker/bin/entrypoint-1ppc.sh
 COPY bin/inject_env.py /st2-docker/bin/inject_env.py
 COPY config/nginx.st2-1ppc.conf.tpl /etc/nginx/conf.d/st2-1ppc.conf.tpl
 
-RUN st2ctl reload --register-all || echo "Ignoring"
+# RUN st2ctl reload --register-all || echo "Ignoring"
