@@ -54,6 +54,16 @@ crudini --set ${MISTRAL_CONF} DEFAULT transport_url \
 crudini --set ${MISTRAL_CONF} database connection \
   postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
 
+# Before we run any entrypoints, we need to make sure Mongo is up.
+while true; do
+        curl ${MONGO_HOST}:${MONGO_PORT}
+        if [ $? -eq 0 ]; then
+            break
+        else
+            sleep 5s
+        fi
+    done
+
 # Run custom init scripts
 for f in /st2-docker/entrypoint.d/*; do
   case "$f" in
@@ -72,9 +82,22 @@ fi
 
 ( cd /etc/nginx/conf.d && ln -sf st2-base.cnf st2.conf )
 
-# Added in puppet SSL cert so git installs do not fail.
+# If this env var is defined, we can assume we are running in a live environment
 if [ ! -z ${GIT_ADDRESS} ]; then
-    echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/puppet_cert.crt && update-ca-certificates
+    # Add in SSL cert so git installs do not fail.
+    echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/puppet_cert.crt && update-ca-certificates;
+    # We need to wait for Mongodb to become ready, so the initial packs can be registered.
+    # while true; do
+    #     curl ${MONGO_HOST}:${MONGO_PORT}
+    #     if [ $? -eq 0 ]; then
+    #         break
+    #     else
+    #         echo test
+    #         sleep 5s
+    #     fi
+    # done
+    # We sleep for a minute, to wait until all other containers are ready
+    # sleep 1m
 fi
 
 exec /sbin/init
