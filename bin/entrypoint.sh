@@ -55,7 +55,9 @@ crudini --set ${MISTRAL_CONF} database connection \
   postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
 
 # Before we run any entrypoints, we need to make sure Mongo is up, so the initial packs are registered.
-while true; do
+if [ ! -z $ {MONGO_HOST} ]; then
+
+    while true; do
         curl ${MONGO_HOST}:${MONGO_PORT}
         if [ $? -eq 0 ]; then
             break
@@ -63,6 +65,7 @@ while true; do
             sleep 5s
         fi
     done
+fi
 
 # Run custom init scripts
 for f in /st2-docker/entrypoint.d/*; do
