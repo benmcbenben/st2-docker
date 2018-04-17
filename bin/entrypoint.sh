@@ -86,6 +86,7 @@ fi
 
 # If this env var is defined, we can assume we are running in a live environment.
 if [ ! -z ${GIT_ADDRESS} ]; then
+    st2ctl reload --register-all
     # Add in SSL cert so st2 pack installs from git installs do not fail. This is only needed if
     # the git repo has an invalid cert.
     echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/git_cert.crt && update-ca-certificates;
