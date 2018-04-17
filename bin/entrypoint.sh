@@ -54,7 +54,7 @@ crudini --set ${MISTRAL_CONF} DEFAULT transport_url \
 crudini --set ${MISTRAL_CONF} database connection \
   postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
 
-# Before we run any entrypoints, we need to make sure Mongo is up.
+# Before we run any entrypoints, we need to make sure Mongo is up, so the initial packs are registered.
 while true; do
         curl ${MONGO_HOST}:${MONGO_PORT}
         if [ $? -eq 0 ]; then
@@ -82,10 +82,11 @@ fi
 
 ( cd /etc/nginx/conf.d && ln -sf st2-base.cnf st2.conf )
 
-# If this env var is defined, we can assume we are running in a live environment
+# If this env var is defined, we can assume we are running in a live environment.
 if [ ! -z ${GIT_ADDRESS} ]; then
-    # Add in SSL cert so git installs do not fail.
-    echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/puppet_cert.crt && update-ca-certificates;
+    # Add in SSL cert so st2 pack installs from git installs do not fail. This is only needed if
+    # the git repo has an invalid cert.
+    echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/git_cert.crt && update-ca-certificates;
     # We need to wait for Mongodb to become ready, so the initial packs can be registered.
     # while true; do
     #     curl ${MONGO_HOST}:${MONGO_PORT}
