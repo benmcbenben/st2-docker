@@ -86,22 +86,16 @@ fi
 
 # If this env var is defined, we can assume we are running in a live environment.
 if [ ! -z ${GIT_ADDRESS} ]; then
+    if [ ! -z ${http_proxy} ]; then
+        # If there is a http proxy defined, we need to configure the "packs" pack, so packs are installed
+        # correctly.
+        printf "http_proxy: ${http_proxy}\nhttps_proxy: ${https_proxy}\nno_proxy: localhost, 127.0.0.1\nproxy_ca_bundle_path: null" > /opt/stackstorm/configs/packs.yaml
+    fi
     st2ctl reload --register-all
     # Add in SSL cert so st2 pack installs from git installs do not fail. This is only needed if
     # the git repo has an invalid cert.
     echo QUIT | openssl s_client -connect ${GIT_ADDRESS}:443 |tee /usr/local/share/ca-certificates/git_cert.crt && update-ca-certificates;
-    # We need to wait for Mongodb to become ready, so the initial packs can be registered.
-    # while true; do
-    #     curl ${MONGO_HOST}:${MONGO_PORT}
-    #     if [ $? -eq 0 ]; then
-    #         break
-    #     else
-    #         echo test
-    #         sleep 5s
-    #     fi
-    # done
-    # We sleep for a minute, to wait until all other containers are ready
-    # sleep 1m
+
 fi
 
 exec /sbin/init
