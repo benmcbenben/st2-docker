@@ -89,7 +89,7 @@ if [ ! -z ${GIT_ADDRESS} ]; then
     if [ ! -z ${http_proxy} ]; then
         # If there is a http proxy defined, we need to configure the "packs" pack, so packs are installed
         # correctly.
-        printf "http_proxy=${http_proxy}\nhttps_proxy=${https_proxy}\nno_proxy=localhost, 127.0.0.1, mongo, postgres, redis, rabbitmq, ${GIT_ADDRESS}\n" | tee /etc/default/st2actionrunner /etc/default/st2api
+        printf "http_proxy=${http_proxy}\nhttps_proxy=${https_proxy}\nno_proxy=localhost,127.0.0.1,mongo,postgres,redis,rabbitmq,${GIT_ADDRESS}\n" | tee /etc/default/st2actionrunner /etc/default/st2api
     fi
     st2ctl reload --register-all
     # Add in SSL cert so st2 pack installs from git installs do not fail. This is only needed if
